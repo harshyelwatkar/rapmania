@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Permanent+Marker&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 260 67% 50.1%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 328 73.4% 70.2%;
+    --secondary-foreground: 240 5.9% 10%;
+    --accent: 199 88.9% 59.6%;
+    --accent-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 260 67% 50.1%;
+    --radius: 0.75rem;
+    
+    /* Custom Colors */
+    --primary-light: 260 84% 64%;
+    --primary-dark: 260 84% 42%;
+    --secondary-light: 328 100% 81%;
+    --secondary-dark: 328 84% 41%;
+    --accent-light: 199 97% 74%;
+    --accent-dark: 199 100% 39%;
+    --dark: 0 0% 7%;
+    --dark-light: 0 0% 12%;
+    --dark-lighter: 0 0% 18%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    background-color: #121212;
+    background-image: 
+      radial-gradient(circle at 25% 10%, rgba(109, 40, 217, 0.1) 0%, transparent 20%),
+      radial-gradient(circle at 75% 75%, rgba(56, 189, 248, 0.1) 0%, transparent 20%);
+  }
+}
+
+/* Glassmorphism */
+.glass {
+  @apply bg-gray-900/40 backdrop-blur-md border-gray-800;
+}
+
+/* Word by word animation */
+.word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: word-appear 0.3s forwards;
+}
+
+@keyframes word-appear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gradient borders */
+.gradient-border {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0.75rem;
+  padding: 1px;
+  background: linear-gradient(45deg, #6D28D9, #38BDF8, #F472B6);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
