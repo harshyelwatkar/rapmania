@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tanstack/react-query": "^5.74.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "wouter": "^3.7.0"
