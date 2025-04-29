@@ -90,7 +90,7 @@
   border-radius: 0.75rem;
   padding: 1px;
   background: linear-gradient(45deg, #6D28D9, #38BDF8, #F472B6);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;

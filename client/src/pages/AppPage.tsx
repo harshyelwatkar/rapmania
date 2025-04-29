@@ -24,6 +24,11 @@ export default function AppPage() {
     }
   }, [user, authLoading, navigate]);
 
+  useEffect(() => {
+    setStep('form');
+  }, [user?.id]);
+  
+
   // Move to results step when content is generated
   useEffect(() => {
     if (generatedContent && generatedContent.trim().length > 0) {

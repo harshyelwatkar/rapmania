@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -49,6 +49,12 @@ export function RapProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [generatedContent, setGeneratedContent] = useState<string>('');
   const userId = user?.id;
+
+  useEffect(() => {
+    // Reset generated content when user changes
+    setGeneratedContent('');
+    queryClient.removeQueries(); // clears stale cached data like previous user's saved raps
+  }, [user?.id]);
 
   // Generate rap lyrics
   const { mutate: generateRap, isPending: isGenerating } = useMutation({

@@ -5,3 +5,7 @@ server/public
 vite.config.ts.*
 *.tar.gz
 .env
+node_modules/
+dist/
+client/node_modules/
+client/package-lock.json
