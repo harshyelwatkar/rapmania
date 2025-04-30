@@ -16,7 +16,7 @@ interface RapResultProps {
 
 export default function RapResult({ content }: RapResultProps) {
   const { user } = useAuth();
-  const { saveRap, isSaving } = useRap();
+  const { saveRap, isSaving, userRaps } = useRap();
   const { toast } = useToast();
   const [editMode, setEditMode] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
@@ -56,6 +56,16 @@ export default function RapResult({ content }: RapResultProps) {
       });
       return;
     }
+
+      // Prevent saving duplicate rap content
+  const alreadySaved = userRaps?.some((rap: any) => rap.content === editedContent);
+  if (alreadySaved) {
+    toast({
+      title: 'Already Saved',
+      description: 'This rap is already saved to your profile',
+    });
+    return;
+  }
     
     try {
       // Find hip-hop genre ID as default if available
