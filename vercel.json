@@ -1,6 +1,15 @@
 {
-    "rewrites": [
-      { "source": "/api/:path*", "destination": "https://rapmania.onrender.com/api/:path*" }
-    ]
-  }
-  
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://rapmania.onrender.com/api/:path*"
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    {
+      "src": "/.*",
+      "dest": "/index.html"
+    }
+  ]
+}

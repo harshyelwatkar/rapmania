@@ -1,3 +1,4 @@
+import cors from "cors";
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
@@ -30,21 +31,30 @@ declare module "express-session" {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup session middleware
   const MemoryStoreInstance = MemoryStore(session);
+
+  app.use(
+    cors({
+      origin: "https://rapmania.vercel.app", // ✅ your deployed frontend
+      credentials: true,
+    })
+  );  
+
   app.use(
     session({
       secret: process.env.SESSION_SECRET || "rapmania-secret",
       resave: false,
       saveUninitialized: false,
-      cookie: { 
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 1000 * 60 * 60 * 24 // 1 day
+      cookie: {
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
       },
       store: new MemoryStoreInstance({
-        checkPeriod: 86400000 // 24 hours
-      })
+        checkPeriod: 86400000,
+      }),
     })
   );
-
   // Set up passport
   app.use(passport.initialize());
   app.use(passport.session());
