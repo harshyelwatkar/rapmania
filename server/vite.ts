@@ -1,4 +1,3 @@
-// server/vite.ts
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
@@ -20,15 +19,16 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
-  // ⛔ Skip in production completely
+  // ✅ Only run in development
   if (process.env.NODE_ENV !== "development") return;
 
-  // ✅ Import vite.config.ts dynamically only in dev
-  const { default: viteConfig } = await import("../vite.config.ts");
-
   const vite = await createViteServer({
-    ...viteConfig,
-    configFile: false,
+    configFile: path.resolve(__dirname, "../vite.config.ts"),
+    server: {
+      middlewareMode: true,
+      hmr: { server },
+    },
+    appType: "custom",
     customLogger: {
       ...viteLogger,
       error: (msg, options) => {
@@ -36,11 +36,6 @@ export async function setupVite(app: Express, server: Server) {
         process.exit(1);
       },
     },
-    server: {
-      middlewareMode: true,
-      hmr: { server },
-    },
-    appType: "custom",
   });
 
   app.use(vite.middlewares);
@@ -48,15 +43,9 @@ export async function setupVite(app: Express, server: Server) {
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
     try {
-      const templatePath = path.resolve(
-        import.meta.dirname,
-        "..",
-        "client",
-        "index.html"
-      );
+      const templatePath = path.resolve(__dirname, "../client/index.html");
       let template = await fs.promises.readFile(templatePath, "utf-8");
 
-      // Inject Vite cache-busting param
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
@@ -72,7 +61,7 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "../dist/public");
+  const distPath = path.resolve(__dirname, "../dist/public");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(
