@@ -39,16 +39,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })
   );  
 
+  app.set("trust proxy", 1);
+
   app.use(
     session({
       secret: process.env.SESSION_SECRET || "rapmania-secret",
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         httpOnly: true,
-        sameSite: "none",
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
+        maxAge: 1000 * 60 * 60 * 24,
       },
       store: new MemoryStoreInstance({
         checkPeriod: 86400000,
