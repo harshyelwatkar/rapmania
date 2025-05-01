@@ -5,14 +5,12 @@ import themePlugin from "@replit/vite-plugin-shadcn-theme-json";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const plugins = [
-  react(),
-  runtimeErrorOverlay(),
-  themePlugin(),
-];
-
 export default defineConfig({
-  plugins,
+  plugins: [
+    react(),
+    runtimeErrorOverlay(),
+    themePlugin(),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "client", "src"),
@@ -28,8 +26,8 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': {
-        target: 'http://localhost:5001',
+      "/api": {
+        target: "http://localhost:5001",
         changeOrigin: true,
         secure: false,
       },
