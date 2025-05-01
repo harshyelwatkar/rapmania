@@ -6,11 +6,6 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
 
-let viteConfig: any;
-if (process.env.NODE_ENV === "development") {
-  viteConfig = (await import("../vite.config.ts")).default;
-}
-
 const viteLogger = createLogger();
 
 export function log(message: string, source = "express") {
@@ -25,15 +20,11 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
+  // ⛔ Skip in production completely
   if (process.env.NODE_ENV !== "development") return;
 
-  const viteConfig = (await import("../vite.config.ts")).default;
-
-  const serverOptions = {
-    middlewareMode: true,
-    hmr: { server },
-    allowedHosts: true as true,
-  };
+  // ✅ Import vite.config.ts dynamically only in dev
+  const { default: viteConfig } = await import("../vite.config.ts");
 
   const vite = await createViteServer({
     ...viteConfig,
@@ -45,29 +36,34 @@ export async function setupVite(app: Express, server: Server) {
         process.exit(1);
       },
     },
-    server: serverOptions,
+    server: {
+      middlewareMode: true,
+      hmr: { server },
+    },
     appType: "custom",
   });
 
   app.use(vite.middlewares);
+
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
-
     try {
-      const clientTemplate = path.resolve(
+      const templatePath = path.resolve(
         import.meta.dirname,
         "..",
         "client",
-        "index.html",
+        "index.html"
       );
+      let template = await fs.promises.readFile(templatePath, "utf-8");
 
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      // Inject Vite cache-busting param
       template = template.replace(
         `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid()}"`,
+        `src="/src/main.tsx?v=${nanoid()}"`
       );
-      const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+
+      const html = await vite.transformIndexHtml(url, template);
+      res.status(200).set({ "Content-Type": "text/html" }).end(html);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);
@@ -80,7 +76,7 @@ export function serveStatic(app: Express) {
 
   if (!fs.existsSync(distPath)) {
     throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
+      `Could not find the build directory: ${distPath}, make sure to build the client first`
     );
   }
 
